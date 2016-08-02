@@ -12,7 +12,9 @@
 <link title="Index of modules" rel=Appendix href="index_modules.html">
 <link title="Tip_ast" rel="Chapter" href="Tip_ast.html">
 <link title="Tip_lexer" rel="Chapter" href="Tip_lexer.html">
-<link title="Tip_parser" rel="Chapter" href="Tip_parser.html"><title>Tip_lexer.A</title>
+<link title="Tip_parser" rel="Chapter" href="Tip_parser.html">
+<link title="Tip_util" rel="Chapter" href="Tip_util.html">
+<link title="Tip_loc" rel="Chapter" href="Tip_loc.html"><title>Tip_lexer.A</title>
 </head>
 <body>
 <div class="navbar">&nbsp;<a class="up" href="Tip_lexer.html" title="Tip_lexer">Up</a>
@@ -24,8 +26,11 @@
 
 <pre><span id="VALpp_str"><span class="keyword">val</span> pp_str</span> : <code class="type">Format.formatter -> string -> unit</code></pre>
 <pre><span id="VALpp_to_string"><span class="keyword">val</span> pp_to_string</span> : <code class="type">(Format.formatter -> 'a -> 'b) -> 'a -> string</code></pre>
-<pre><span class="keyword">module</span> <a href="Tip_ast.Loc.html">Loc</a>: <code class="code">sig</code> <a href="Tip_ast.Loc.html">..</a> <code class="code">end</code></pre>
+<pre><span class="keyword">module</span> <a href="Tip_ast.Loc.html">Loc</a>: <code class="type"><a href="Tip_loc.html">Tip_loc</a></code></pre>
 <pre><span id="TYPEvar"><span class="keyword">type</span> <code class="type"></code>var</span> = <code class="type">string</code> </pre>
+
+
+<pre><span id="TYPEty_var"><span class="keyword">type</span> <code class="type"></code>ty_var</span> = <code class="type">string</code> </pre>
 
 
 <pre><code><span id="TYPEty"><span class="keyword">type</span> <code class="type"></code>ty</span> = </code></pre><table class="typetable">
@@ -40,7 +45,7 @@
 <td align="left" valign="top" >
 <code><span class="keyword">|</span></code></td>
 <td align="left" valign="top" >
-<code><span id="TYPEELTty.Ty_const"><span class="constructor">Ty_const</span></span> <span class="keyword">of</span> <code class="type">string</code></code></td>
+<code><span id="TYPEELTty.Ty_app"><span class="constructor">Ty_app</span></span> <span class="keyword">of</span> <code class="type"><a href="Tip_ast.html#TYPEty_var">ty_var</a> * <a href="Tip_ast.html#TYPEty">ty</a> list</code></code></td>
 
 </tr>
 <tr>
@@ -51,6 +56,9 @@
 
 </tr></table>
 
+<div class="info ">
+Polymorphic types<br>
+</div>
 
 
 <pre><span id="TYPEtyped_var"><span class="keyword">type</span> <code class="type"></code>typed_var</span> = <code class="type"><a href="Tip_ast.html#TYPEvar">var</a> * <a href="Tip_ast.html#TYPEty">ty</a></code> </pre>
@@ -110,13 +118,6 @@
 <td align="left" valign="top" >
 <code><span class="keyword">|</span></code></td>
 <td align="left" valign="top" >
-<code><span id="TYPEELTterm.Mu"><span class="constructor">Mu</span></span> <span class="keyword">of</span> <code class="type"><a href="Tip_ast.html#TYPEtyped_var">typed_var</a> * <a href="Tip_ast.html#TYPEterm">term</a></code></code></td>
-
-</tr>
-<tr>
-<td align="left" valign="top" >
-<code><span class="keyword">|</span></code></td>
-<td align="left" valign="top" >
 <code><span id="TYPEELTterm.Eq"><span class="constructor">Eq</span></span> <span class="keyword">of</span> <code class="type"><a href="Tip_ast.html#TYPEterm">term</a> * <a href="Tip_ast.html#TYPEterm">term</a></code></code></td>
 
 </tr>
@@ -147,11 +148,108 @@
 <td align="left" valign="top" >
 <code><span id="TYPEELTterm.Not"><span class="constructor">Not</span></span> <span class="keyword">of</span> <code class="type"><a href="Tip_ast.html#TYPEterm">term</a></code></code></td>
 
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTterm.Cast"><span class="constructor">Cast</span></span> <span class="keyword">of</span> <code class="type"><a href="Tip_ast.html#TYPEterm">term</a> * <a href="Tip_ast.html#TYPEty">ty</a></code></code></td>
+
 </tr></table>
 
 <div class="info ">
 <h2 id="2_ASTSexpressionswithlocations">AST: S-expressions with locations</h2><br>
 </div>
+
+
+<pre><code><span id="TYPEcstor"><span class="keyword">type</span> <code class="type"></code>cstor</span> = {</code></pre><table class="typetable">
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTcstor.cstor_name">cstor_name</span>&nbsp;: <code class="type">string</code>;</code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTcstor.cstor_args">cstor_args</span>&nbsp;: <code class="type">(string * <a href="Tip_ast.html#TYPEty">ty</a>) list</code>;</code></td>
+
+</tr></table>
+}
+
+
+
+<pre><code><span id="TYPEfun_decl"><span class="keyword">type</span> <code class="type"></code>fun_decl</span> = {</code></pre><table class="typetable">
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTfun_decl.fun_ty_vars">fun_ty_vars</span>&nbsp;: <code class="type"><a href="Tip_ast.html#TYPEty_var">ty_var</a> list</code>;</code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTfun_decl.fun_name">fun_name</span>&nbsp;: <code class="type">string</code>;</code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTfun_decl.fun_args">fun_args</span>&nbsp;: <code class="type"><a href="Tip_ast.html#TYPEtyped_var">typed_var</a> list</code>;</code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTfun_decl.fun_ret">fun_ret</span>&nbsp;: <code class="type"><a href="Tip_ast.html#TYPEty">ty</a></code>;</code></td>
+
+</tr></table>
+}
+
+
+
+<pre><code><span id="TYPEfun_rec"><span class="keyword">type</span> <code class="type"></code>fun_rec</span> = {</code></pre><table class="typetable">
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTfun_rec.fr_decl">fr_decl</span>&nbsp;: <code class="type"><a href="Tip_ast.html#TYPEfun_decl">fun_decl</a></code>;</code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTfun_rec.fr_body">fr_body</span>&nbsp;: <code class="type"><a href="Tip_ast.html#TYPEterm">term</a></code>;</code></td>
+
+</tr></table>
+}
+
+
+
+<pre><code><span id="TYPEfuns_rec"><span class="keyword">type</span> <code class="type"></code>funs_rec</span> = {</code></pre><table class="typetable">
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTfuns_rec.fsr_decls">fsr_decls</span>&nbsp;: <code class="type"><a href="Tip_ast.html#TYPEfun_decl">fun_decl</a> list</code>;</code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTfuns_rec.fsr_bodies">fsr_bodies</span>&nbsp;: <code class="type"><a href="Tip_ast.html#TYPEterm">term</a> list</code>;</code></td>
+
+</tr></table>
+}
+
 
 
 <pre><code><span id="TYPEstatement"><span class="keyword">type</span> <code class="type"></code>statement</span> = {</code></pre><table class="typetable">
@@ -166,7 +264,7 @@
 <td align="left" valign="top" >
 <code>&nbsp;&nbsp;</code></td>
 <td align="left" valign="top" >
-<code><span id="TYPEELTstatement.loc">loc</span>&nbsp;: <code class="type"><a href="Tip_ast.Loc.html#TYPEt">Loc.t</a> option</code>;</code></td>
+<code><span id="TYPEELTstatement.loc">loc</span>&nbsp;: <code class="type">Loc.t option</code>;</code></td>
 
 </tr></table>
 }
@@ -178,13 +276,6 @@
 <td align="left" valign="top" >
 <code><span class="keyword">|</span></code></td>
 <td align="left" valign="top" >
-<code><span id="TYPEELTstmt.Stmt_include"><span class="constructor">Stmt_include</span></span> <span class="keyword">of</span> <code class="type">string</code></code></td>
-
-</tr>
-<tr>
-<td align="left" valign="top" >
-<code><span class="keyword">|</span></code></td>
-<td align="left" valign="top" >
 <code><span id="TYPEELTstmt.Stmt_decl"><span class="constructor">Stmt_decl</span></span> <span class="keyword">of</span> <code class="type">string * <a href="Tip_ast.html#TYPEty">ty</a></code></code></td>
 
 </tr>
@@ -192,14 +283,21 @@
 <td align="left" valign="top" >
 <code><span class="keyword">|</span></code></td>
 <td align="left" valign="top" >
-<code><span id="TYPEELTstmt.Stmt_def"><span class="constructor">Stmt_def</span></span> <span class="keyword">of</span> <code class="type">(string * <a href="Tip_ast.html#TYPEty">ty</a> * <a href="Tip_ast.html#TYPEterm">term</a>) list</code></code></td>
+<code><span id="TYPEELTstmt.Stmt_fun_rec"><span class="constructor">Stmt_fun_rec</span></span> <span class="keyword">of</span> <code class="type"><a href="Tip_ast.html#TYPEfun_rec">fun_rec</a></code></code></td>
 
 </tr>
 <tr>
 <td align="left" valign="top" >
 <code><span class="keyword">|</span></code></td>
 <td align="left" valign="top" >
-<code><span id="TYPEELTstmt.Stmt_data"><span class="constructor">Stmt_data</span></span> <span class="keyword">of</span> <code class="type">(string * (string * <a href="Tip_ast.html#TYPEty">ty</a> list) list) list</code></code></td>
+<code><span id="TYPEELTstmt.Stmt_funs_rec"><span class="constructor">Stmt_funs_rec</span></span> <span class="keyword">of</span> <code class="type"><a href="Tip_ast.html#TYPEfuns_rec">funs_rec</a></code></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTstmt.Stmt_data"><span class="constructor">Stmt_data</span></span> <span class="keyword">of</span> <code class="type"><a href="Tip_ast.html#TYPEty_var">ty_var</a> list * (string * <a href="Tip_ast.html#TYPEcstor">cstor</a> list) list</code></code></td>
 
 </tr>
 <tr>
@@ -213,14 +311,22 @@
 <td align="left" valign="top" >
 <code><span class="keyword">|</span></code></td>
 <td align="left" valign="top" >
-<code><span id="TYPEELTstmt.Stmt_goal"><span class="constructor">Stmt_goal</span></span> <span class="keyword">of</span> <code class="type"><a href="Tip_ast.html#TYPEtyped_var">typed_var</a> list * <a href="Tip_ast.html#TYPEterm">term</a></code></code></td>
+<code><span id="TYPEELTstmt.Stmt_assert_not"><span class="constructor">Stmt_assert_not</span></span> <span class="keyword">of</span> <code class="type"><a href="Tip_ast.html#TYPEtyped_var">typed_var</a> list * <a href="Tip_ast.html#TYPEterm">term</a></code></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTstmt.Stmt_check_sat"><span class="constructor">Stmt_check_sat</span></span></code></td>
 
 </tr></table>
 
 
 
 <pre><span id="VALty_bool"><span class="keyword">val</span> ty_bool</span> : <code class="type"><a href="Tip_ast.html#TYPEty">ty</a></code></pre>
-<pre><span id="VALty_const"><span class="keyword">val</span> ty_const</span> : <code class="type">string -> <a href="Tip_ast.html#TYPEty">ty</a></code></pre>
+<pre><span id="VALty_app"><span class="keyword">val</span> ty_app</span> : <code class="type"><a href="Tip_ast.html#TYPEty_var">ty_var</a> -> <a href="Tip_ast.html#TYPEty">ty</a> list -> <a href="Tip_ast.html#TYPEty">ty</a></code></pre>
+<pre><span id="VALty_const"><span class="keyword">val</span> ty_const</span> : <code class="type"><a href="Tip_ast.html#TYPEty_var">ty_var</a> -> <a href="Tip_ast.html#TYPEty">ty</a></code></pre>
 <pre><span id="VALty_arrow_l"><span class="keyword">val</span> ty_arrow_l</span> : <code class="type"><a href="Tip_ast.html#TYPEty">ty</a> list -> <a href="Tip_ast.html#TYPEty">ty</a> -> <a href="Tip_ast.html#TYPEty">ty</a></code></pre>
 <pre><span id="VALty_arrow"><span class="keyword">val</span> ty_arrow</span> : <code class="type"><a href="Tip_ast.html#TYPEty">ty</a> -> <a href="Tip_ast.html#TYPEty">ty</a> -> <a href="Tip_ast.html#TYPEty">ty</a></code></pre>
 <pre><span id="VALtrue_"><span class="keyword">val</span> true_</span> : <code class="type"><a href="Tip_ast.html#TYPEterm">term</a></code></pre>
@@ -236,22 +342,30 @@
 <pre><span id="VALand_"><span class="keyword">val</span> and_</span> : <code class="type"><a href="Tip_ast.html#TYPEterm">term</a> list -> <a href="Tip_ast.html#TYPEterm">term</a></code></pre>
 <pre><span id="VALor_"><span class="keyword">val</span> or_</span> : <code class="type"><a href="Tip_ast.html#TYPEterm">term</a> list -> <a href="Tip_ast.html#TYPEterm">term</a></code></pre>
 <pre><span id="VALnot_"><span class="keyword">val</span> not_</span> : <code class="type"><a href="Tip_ast.html#TYPEterm">term</a> -> <a href="Tip_ast.html#TYPEterm">term</a></code></pre>
-<pre><span id="VAL_mk"><span class="keyword">val</span> _mk</span> : <code class="type">?loc:<a href="Tip_ast.Loc.html#TYPEt">Loc.t</a> -> <a href="Tip_ast.html#TYPEstmt">stmt</a> -> <a href="Tip_ast.html#TYPEstatement">statement</a></code></pre>
-<pre><span id="VALinclude_"><span class="keyword">val</span> include_</span> : <code class="type">?loc:<a href="Tip_ast.Loc.html#TYPEt">Loc.t</a> -> string -> <a href="Tip_ast.html#TYPEstatement">statement</a></code></pre>
-<pre><span id="VALdecl"><span class="keyword">val</span> decl</span> : <code class="type">?loc:<a href="Tip_ast.Loc.html#TYPEt">Loc.t</a> -> string -> <a href="Tip_ast.html#TYPEty">ty</a> -> <a href="Tip_ast.html#TYPEstatement">statement</a></code></pre>
-<pre><span id="VALdef"><span class="keyword">val</span> def</span> : <code class="type">?loc:<a href="Tip_ast.Loc.html#TYPEt">Loc.t</a> -><br>       (string * <a href="Tip_ast.html#TYPEty">ty</a> * <a href="Tip_ast.html#TYPEterm">term</a>) list -> <a href="Tip_ast.html#TYPEstatement">statement</a></code></pre>
-<pre><span id="VALdata"><span class="keyword">val</span> data</span> : <code class="type">?loc:<a href="Tip_ast.Loc.html#TYPEt">Loc.t</a> -><br>       (string * (string * <a href="Tip_ast.html#TYPEty">ty</a> list) list) list -> <a href="Tip_ast.html#TYPEstatement">statement</a></code></pre>
-<pre><span id="VALassert_"><span class="keyword">val</span> assert_</span> : <code class="type">?loc:<a href="Tip_ast.Loc.html#TYPEt">Loc.t</a> -> <a href="Tip_ast.html#TYPEterm">term</a> -> <a href="Tip_ast.html#TYPEstatement">statement</a></code></pre>
-<pre><span id="VALgoal"><span class="keyword">val</span> goal</span> : <code class="type">?loc:<a href="Tip_ast.Loc.html#TYPEt">Loc.t</a> -><br>       <a href="Tip_ast.html#TYPEtyped_var">typed_var</a> list -> <a href="Tip_ast.html#TYPEterm">term</a> -> <a href="Tip_ast.html#TYPEstatement">statement</a></code></pre>
-<pre><span id="VALloc"><span class="keyword">val</span> loc</span> : <code class="type"><a href="Tip_ast.html#TYPEstatement">statement</a> -> <a href="Tip_ast.Loc.html#TYPEt">Loc.t</a> option</code></pre>
+<pre><span id="VALcast"><span class="keyword">val</span> cast</span> : <code class="type"><a href="Tip_ast.html#TYPEterm">term</a> -> ty:<a href="Tip_ast.html#TYPEty">ty</a> -> <a href="Tip_ast.html#TYPEterm">term</a></code></pre>
+<pre><span id="VAL_mk"><span class="keyword">val</span> _mk</span> : <code class="type">?loc:Loc.t -> <a href="Tip_ast.html#TYPEstmt">stmt</a> -> <a href="Tip_ast.html#TYPEstatement">statement</a></code></pre>
+<pre><span id="VALmk_cstor"><span class="keyword">val</span> mk_cstor</span> : <code class="type">string -> (string * <a href="Tip_ast.html#TYPEty">ty</a>) list -> <a href="Tip_ast.html#TYPEcstor">cstor</a></code></pre>
+<pre><span id="VALmk_fun_decl"><span class="keyword">val</span> mk_fun_decl</span> : <code class="type">ty_vars:<a href="Tip_ast.html#TYPEty_var">ty_var</a> list -><br>       string -> <a href="Tip_ast.html#TYPEtyped_var">typed_var</a> list -> <a href="Tip_ast.html#TYPEty">ty</a> -> <a href="Tip_ast.html#TYPEfun_decl">fun_decl</a></code></pre>
+<pre><span id="VALmk_fun_rec"><span class="keyword">val</span> mk_fun_rec</span> : <code class="type">ty_vars:<a href="Tip_ast.html#TYPEty_var">ty_var</a> list -><br>       string -><br>       <a href="Tip_ast.html#TYPEtyped_var">typed_var</a> list -> <a href="Tip_ast.html#TYPEty">ty</a> -> <a href="Tip_ast.html#TYPEterm">term</a> -> <a href="Tip_ast.html#TYPEfun_rec">fun_rec</a></code></pre>
+<pre><span id="VALdecl"><span class="keyword">val</span> decl</span> : <code class="type">?loc:Loc.t -> string -> <a href="Tip_ast.html#TYPEty">ty</a> -> <a href="Tip_ast.html#TYPEstatement">statement</a></code></pre>
+<pre><span id="VALfun_rec"><span class="keyword">val</span> fun_rec</span> : <code class="type">?loc:Loc.t -> <a href="Tip_ast.html#TYPEfun_rec">fun_rec</a> -> <a href="Tip_ast.html#TYPEstatement">statement</a></code></pre>
+<pre><span id="VALfuns_rec"><span class="keyword">val</span> funs_rec</span> : <code class="type">?loc:Loc.t -> <a href="Tip_ast.html#TYPEfun_decl">fun_decl</a> list -> <a href="Tip_ast.html#TYPEterm">term</a> list -> <a href="Tip_ast.html#TYPEstatement">statement</a></code></pre>
+<pre><span id="VALdata"><span class="keyword">val</span> data</span> : <code class="type">?loc:Loc.t -><br>       <a href="Tip_ast.html#TYPEty_var">ty_var</a> list -><br>       (string * <a href="Tip_ast.html#TYPEcstor">cstor</a> list) list -> <a href="Tip_ast.html#TYPEstatement">statement</a></code></pre>
+<pre><span id="VALassert_"><span class="keyword">val</span> assert_</span> : <code class="type">?loc:Loc.t -> <a href="Tip_ast.html#TYPEterm">term</a> -> <a href="Tip_ast.html#TYPEstatement">statement</a></code></pre>
+<pre><span id="VALassert_not"><span class="keyword">val</span> assert_not</span> : <code class="type">?loc:Loc.t -> <a href="Tip_ast.html#TYPEtyped_var">typed_var</a> list -> <a href="Tip_ast.html#TYPEterm">term</a> -> <a href="Tip_ast.html#TYPEstatement">statement</a></code></pre>
+<pre><span id="VALcheck_sat"><span class="keyword">val</span> check_sat</span> : <code class="type">?loc:Loc.t -> unit -> <a href="Tip_ast.html#TYPEstatement">statement</a></code></pre>
+<pre><span id="VALloc"><span class="keyword">val</span> loc</span> : <code class="type"><a href="Tip_ast.html#TYPEstatement">statement</a> -> Loc.t option</code></pre>
 <pre><span id="VALview"><span class="keyword">val</span> view</span> : <code class="type"><a href="Tip_ast.html#TYPEstatement">statement</a> -> <a href="Tip_ast.html#TYPEstmt">stmt</a></code></pre>
 <pre><span id="VALfpf"><span class="keyword">val</span> fpf</span> : <code class="type">Format.formatter -> ('a, Format.formatter, unit) Pervasives.format -> 'a</code></pre>
 <pre><span id="VALpp_list"><span class="keyword">val</span> pp_list</span> : <code class="type">?start:string -><br>       ?stop:string -><br>       ?sep:string -><br>       (Format.formatter -> 'a -> unit) -> Format.formatter -> 'a list -> unit</code></pre>
+<pre><span id="VALpp_tyvar"><span class="keyword">val</span> pp_tyvar</span> : <code class="type">Format.formatter -> string -> unit</code></pre>
 <pre><span id="VALpp_ty"><span class="keyword">val</span> pp_ty</span> : <code class="type">Format.formatter -> <a href="Tip_ast.html#TYPEty">ty</a> -> unit</code></pre>
 <pre><span id="VALpp_term"><span class="keyword">val</span> pp_term</span> : <code class="type">Format.formatter -> <a href="Tip_ast.html#TYPEterm">term</a> -> unit</code></pre>
 <pre><span id="VALpp_typed_var"><span class="keyword">val</span> pp_typed_var</span> : <code class="type">Format.formatter -> <a href="Tip_ast.html#TYPEtyped_var">typed_var</a> -> unit</code></pre>
+<pre><span id="VALpp_par"><span class="keyword">val</span> pp_par</span> : <code class="type">(Format.formatter -> 'a -> unit) -><br>       Format.formatter -> string list * 'a -> unit</code></pre>
+<pre><span id="VALpp_fun_decl"><span class="keyword">val</span> pp_fun_decl</span> : <code class="type">Format.formatter -> <a href="Tip_ast.html#TYPEfun_decl">fun_decl</a> -> unit</code></pre>
 <pre><span id="VALpp_stmt"><span class="keyword">val</span> pp_stmt</span> : <code class="type">Format.formatter -> <a href="Tip_ast.html#TYPEstatement">statement</a> -> unit</code></pre>
-<pre><span id="EXCEPTIONParse_error"><span class="keyword">exception</span> Parse_error</span> <span class="keyword">of</span> <code class="type"><a href="Tip_ast.Loc.html#TYPEt">Loc.t</a> option * string</code></pre>
+<pre><span id="EXCEPTIONParse_error"><span class="keyword">exception</span> Parse_error</span> <span class="keyword">of</span> <code class="type">Loc.t option * string</code></pre>
 
-<pre><span id="VALparse_error"><span class="keyword">val</span> parse_error</span> : <code class="type">?loc:<a href="Tip_ast.Loc.html#TYPEt">Loc.t</a> -> string -> 'a</code></pre>
-<pre><span id="VALparse_errorf"><span class="keyword">val</span> parse_errorf</span> : <code class="type">?loc:<a href="Tip_ast.Loc.html#TYPEt">Loc.t</a> -> ('a, unit, string, 'b) Pervasives.format4 -> 'a</code></pre></body></html>
+<pre><span id="VALparse_error"><span class="keyword">val</span> parse_error</span> : <code class="type">?loc:Loc.t -> string -> 'a</code></pre>
+<pre><span id="VALparse_errorf"><span class="keyword">val</span> parse_errorf</span> : <code class="type">?loc:Loc.t -> ('a, unit, string, 'b) Pervasives.format4 -> 'a</code></pre></body></html>
